@@ -28,6 +28,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install pytest
+        run: python -m pip install --upgrade pip && python -m pip install pytest
       - name: Run pytest
         run: python -m pytest tests/test_kalshi_doctor.py -q
 
@@ -41,12 +43,16 @@ jobs:
           python-version: "3.11"
       - name: Bad fixtures must FAIL (exit 1)
         run: |
+          set +e
           python scripts/kalshi_doctor.py tests/fixtures/bad
-          test $? -eq 1 || { echo "bad fixtures did not fail"; exit 1; }
+          code=$?
+          if [ "$code" -ne 1 ]; then echo "bad fixtures did not fail (exit $code)"; exit 1; fi
       - name: Good fixtures must PASS (exit 0)
         run: |
+          set +e
           python scripts/kalshi_doctor.py tests/fixtures/good
-          test $? -eq 0 || { echo "good fixtures wrongly failed"; exit 1; }
+          code=$?
+          if [ "$code" -ne 0 ]; then echo "good fixtures wrongly failed (exit $code)"; exit 1; fi
 
   upstream-drift:
     name: Upstream Kalshi spec drift
