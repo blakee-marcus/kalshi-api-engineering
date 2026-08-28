@@ -1,0 +1,31 @@
+name: New detector rule
+description: A protocol mistake LLM-generated Kalshi clients make, worth a check
+title: "[new-rule] "
+labels: ["new-rule"]
+body:
+  - type: input
+    id: id
+    attributes:
+      label: Proposed rule id
+      description: KALSHI-<SURFACE>-<NNN>, e.g. KALSHI-WS-005
+    validations:
+      required: true
+  - type: textarea
+    id: bug
+    attributes:
+      label: The mistake
+      description: What LLM-generated clients get wrong, and the failure mode
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official Kalshi source
+      description: URL to the spec/page that proves the correct behavior
+    validations:
+      required: true
+  - type: textarea
+    id: fixtures
+    attributes:
+      label: Fixtures
+      description: Attach a bad/ and good/ reproduction

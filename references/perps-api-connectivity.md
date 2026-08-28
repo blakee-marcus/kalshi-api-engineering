@@ -1,8 +1,9 @@
 # Kalshi Perps (Margin) API Connectivity
 
-Source: Kalshi docs — Perps API overview, extracted 2026-08-28.
+Official source: https://docs.kalshi.com/perps_openapi.yaml
+Last ingested: 2026-08-28
 
-“Perps”, “margin”, and “perpetual futures” are the same product. The API surface uses `margin` throughout (endpoints under `/margin`, margin-prefixed fields). It mirrors the event-contract API for auth, pagination, error format, and order lifecycle.
+"Perps", "margin", and "perpetual futures" are the same product. The API surface uses `margin` throughout (endpoints under `/margin`, margin-prefixed fields). It mirrors the event-contract API for auth, pagination, error format, and order lifecycle.
 
 ## REST API
 

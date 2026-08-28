@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "17 6 * * *"   # daily upstream-spec drift check
 
 jobs:
   verify-public-surface:
@@ -17,3 +19,44 @@ jobs:
           python-version: "3.11"
       - name: Run public-surface verifier
         run: python scripts/verify_public_surface.py
+
+  detector-tests:
+    name: Detector rules (pytest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run pytest
+        run: python -m pytest tests/test_kalshi_doctor.py -q
+
+  doctor-smoke:
+    name: Doctor scans fixtures + examples
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Bad fixtures must FAIL (exit 1)
+        run: |
+          python scripts/kalshi_doctor.py tests/fixtures/bad
+          test $? -eq 1 || { echo "bad fixtures did not fail"; exit 1; }
+      - name: Good fixtures must PASS (exit 0)
+        run: |
+          python scripts/kalshi_doctor.py tests/fixtures/good
+          test $? -eq 0 || { echo "good fixtures wrongly failed"; exit 1; }
+
+  upstream-drift:
+    name: Upstream Kalshi spec drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fetch specs, hash, open issue on change
+        run: python scripts/check_upstream_drift.py
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

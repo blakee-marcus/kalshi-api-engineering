@@ -1,0 +1,24 @@
+name: Bug report
+description: The checker misfires or a playbook is wrong
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: False positive, false negative, or wrong guidance?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Minimal client snippet or command that triggers it
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official Kalshi source
+      description: URL to the docs.kalshi.com spec/page this should match

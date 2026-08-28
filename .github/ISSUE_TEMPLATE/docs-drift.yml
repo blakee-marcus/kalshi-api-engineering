@@ -1,0 +1,26 @@
+name: Docs drift
+description: Kalshi changed an endpoint/spec and a reference page is stale
+title: "[docs-drift] "
+labels: ["docs-drift"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Which reference page
+      description: e.g. references/perps-api-connectivity.md
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: New official source
+      description: URL to the changed docs.kalshi.com spec/page
+    validations:
+      required: true
+  - type: textarea
+    id: diff
+    attributes:
+      label: What changed
+      description: The behavior/schema that no longer matches the reference
+    validations:
+      required: true

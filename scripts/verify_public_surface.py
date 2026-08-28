@@ -150,6 +150,34 @@ def check_source_urls() -> None:
         ok("every reference page cites an official source URL")
 
 
+def check_source_manifest() -> None:
+    """Fail if a reference page lacks an official source URL + ingest date."""
+    refs = ROOT / "references"
+    if not refs.is_dir():
+        return
+    for p in sorted(refs.glob("*.md")):
+        if p.name in {"api-documentation-index.md"}:
+            continue
+        text = p.read_text(errors="replace")
+        head = "\n".join(text.splitlines()[:12])
+        if "docs.kalshi.com" not in head and "kalshi.com" not in head:
+            err(f"{p.name}: no official source URL in header")
+        if "ingest" not in text.lower() and "last ingested" not in text.lower():
+            err(f"{p.name}: no ingest date recorded")
+
+
+def check_routing_links() -> None:
+    """SKILL.md command table must link to an existing references/<cmd>.md."""
+    skill = ROOT / "SKILL.md"
+    if not skill.exists():
+        return
+    refs = ROOT / "references"
+    ref_names = {p.stem for p in refs.glob("*.md")} if refs.is_dir() else set()
+    for m in re.finditer(r"\(`([a-z\-]+)\.md`\)", skill.read_text()):
+        if m.group(1) not in ref_names:
+            err(f"SKILL.md routes to missing playbook: {m.group(1)}.md")
+
+
 def main() -> int:
     print(f"Verifying public surface at {ROOT}\n")
     check_frontmatter()
@@ -157,6 +185,8 @@ def main() -> int:
     check_patterns()
     check_no_state_changing_requests()
     check_local_links()
+    check_routing_links()
+    check_source_manifest()
     check_source_urls()
     print()
     if FAIL:

@@ -1,131 +1,81 @@
 # Kalshi API Engineering
 
-An agent **skill** (and plain reference) for building correct, exchange-safe clients
-against [Kalshi's APIs](https://docs.kalshi.com/) — Trade API, REST, WebSocket, FIX,
-Predictions (event contracts), and Perps / Margin (perpetual futures).
+**Make your AI coding agent reliable at Kalshi.**
 
-> **Engineering reference, not a trading bot.** It documents how Kalshi's APIs behave
-> and how to integrate against them. It contains **no trading strategy, no alpha, and no
-> authorization to place live orders.** Any state-changing Kalshi call requires explicit,
-> separate user authorization outside this skill.
-
-## Why this exists
-
-Most Kalshi integrations fail the same way: the margin REST auth path drops `/margin`,
-so every private endpoint returns `401` while public ones still work — a misleading split
-that looks like "broken creds." This skill is the curated, source-backed reference for
-that gotcha and the full endpoint/connectivity catalog, kept faithful to the official docs.
-
-## What it prevents
-
-- Signed requests that 401 because the `/margin` path was dropped from the signature.
-- Order books built from independently-supplied asks (they must be **derived**).
-- Fixed-point prices divided by 100 (they're already 4-decimal strings).
-- Trusting a stale or gapped book, or reusing pre-reconnect state as trusted.
-- Reusing the Predictions WebSocket auth path on the margin WebSocket (silent auth failure).
-- Building a trading gate around `market_lifecycle_v2` / `market_positions` (absent on margin WS).
-- Treating WS market-data traffic as a lifecycle event (it is not).
-
-## Provenance — where the knowledge came from
-
-Every reference page is derived from the **public Kalshi documentation**, not from a
-private bot or personal notes. See `references/api-documentation-index.md` (what's covered,
-official sources) and `references/source-manifest.md` (per-page source + ingest date).
-
-| Authority | Source |
-|-----------|--------|
-| Docs home | https://docs.kalshi.com/ |
-| Page index | https://docs.kalshi.com/llms.txt |
-| Predictions REST | https://docs.kalshi.com/openapi.yaml |
-| Predictions WS | https://docs.kalshi.com/asyncapi.yaml |
-| Perps / Margin REST | https://docs.kalshi.com/perps_openapi.yaml |
-| Perps / Margin WS | https://docs.kalshi.com/perps_asyncapi.yaml |
-
-**Authority order:** (1) official docs/specs → (2) observed API behavior → (3) this skill's
-pages → (4) prior implementations only when explicitly consulted. The published specs are
-schema authority.
-
-## Read-only vs state-changing boundaries
-
-| Scope | Allowed by this skill | Requires |
-|-------|----------------------|----------|
-| Reading public/authenticated market data, specs, docs | Yes (described) | Your own API key |
-| Building/signing request payloads locally | Yes (described) | — |
-| **Placing / amending / canceling live orders** | **No** | Explicit, separate user authorization |
-| Live trading / strategy execution | **No** | Your own application + authorization |
-
-This skill describes the protocol. It never triggers a state-changing call on your behalf.
-
-## Permissions & tools it uses
-
-- **No network calls.** The skill is documentation; it makes no requests.
-- **No filesystem writes** outside normal skill installation (copying `SKILL.md` +
-  `references/`).
-- **No credentials.** It does not read, store, or ask for API keys or private keys.
-- A client *you* build from it will need your Kalshi API key + private key to authenticate,
-  handled entirely in your code/environment — never in this repo.
-
-## What it will NOT do
-
-- Will not place, amend, or cancel live orders.
-- Will not ask you to paste private keys or secrets.
-- Will not authorize live trading.
-- Will not read or write any private bot repo, personal notes, chat logs, or internal system.
-
-## Coverage / status
-
-| Surface | Reference | Status |
-|---------|-----------|--------|
-| Predictions — orderbook / canonical-book semantics | `canonical-book-pattern.md` | Ingested 2026-08-28 |
-| Predictions — forecast percentile | `forecast-percentile-api.md` | Ingested 2026-08-28 |
-| Predictions — historical candlesticks | `historical-candlesticks-api.md` | Ingested 2026-08-28 |
-| Predictions — client trades | `client-trades-api.md` | Ingested 2026-08-28 |
-| Perps / Margin — REST + WS + FIX connectivity, auth, order entry, order groups, error codes | `perps-api-connectivity.md` | Ingested 2026-08-28 |
-
-Out of scope (read the official specs): full endpoint-by-endpoint REST catalogs beyond the
-pages above, account/portfolio read endpoints not summarized in `perps-api-connectivity.md`,
-FIX session-replay/certification, and Kalshi Academy tutorials. Claims are scoped to the
-pages listed; "authoritative reference bank" is **not** claimed for surfaces not covered.
-
-## Installation
-
-### Primary — skill managers
+Source-backed REST, WebSocket, FIX and Perps guidance — plus a deterministic
+checker that catches the integration bugs LLMs repeatedly generate.
 
 ```bash
 npx skills add blakee-marcus/kalshi-api-engineering
 ```
 
-(If your agent framework uses the Skills registry / a compatible CLI, that is the supported path.)
+Then ask your agent:
 
-### Manual — any agent framework
+> **Audit this Kalshi integration.**
 
-Copy `SKILL.md` and `references/` into your skill directory:
+[![CI](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml/badge.svg)](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Kalshi docs](https://img.shields.io/badge/source-docs.kalshi.com-blue)](https://docs.kalshi.com/)
 
-```bash
-SKILL_DIR="$HOME/.hermes/skills/trading/kalshi-api-engineering"   # or your framework's path
-mkdir -p "$SKILL_DIR/references"
-cp SKILL.md "$SKILL_DIR/"
-cp -r references/. "$SKILL_DIR/references/"
+---
+
+## It catches things like
+
+```text
+✗ Missing /margin in RSA-PSS signing        → every private call 401s
+✗ Predictions WS auth reused for Perps      → silent auth failure
+✗ Fixed-point prices divided by 100         → 100x mispricing
+✗ Stale orderbooks treated as trustworthy   → trades on dead data
+✗ Perps code expecting non-existent WS channels (market_lifecycle_v2, market_positions)
 ```
 
-### Maintainer-only sync (not for consumers)
+The skill ships **12 deterministic rules** (`scripts/kalshi_doctor.py`) that scan
+your client code and report `PASS` / `WARN` / `FAIL` with the exact file:line,
+the official Kalshi source, and a suggested fix.
 
-`scripts/maintainer-sync-hermes.sh` is a **maintainer-only** helper that syncs this source
-repo into a locally installed Hermes skill copy. Do not run it from a clone you don't
-maintain. Its removal of the installed `references/` is intentional and scoped to the
-installed copy only.
+> **Install this and your agent can automatically find the Kalshi integration bugs LLMs repeatedly generate.**
 
-## Supported runtimes
+---
 
-- Any agent runtime that loads `SKILL.md` + `references/` (Hermes, and others via manual copy).
-- Python examples use `cryptography` + `requests` for signing demos; the skill content is
-  language-agnostic.
+## Why this skill
 
-## 30-second start — prove the signing rule, read-only
+An AI-generated Kalshi client usually *looks* correct and then fails in one of a
+handful of predictable ways. This skill turns those failure modes into a checklist
+the agent runs before shipping:
 
-This skill is read-only by design. The snippet below **signs a request and reads**
-an authenticated endpoint — it never places, amends, or cancels an order. Run it
-against the **demo** base first; a `GET` cannot change state.
+- **Broken auth** — public `200`, private `401`; the fix is signing the full
+  `/margin` path. Most integrations hit this first.
+- **Broken Perps pricing** — `"0.5600"` parsed as `float` and divided by 100
+  becomes `0.0056`. The skill enforces `Decimal("0.5600")`.
+- **Broken WS trust** — a sequence gap or reconnect that doesn't invalidate the
+  book lets the agent trade on stale data. The skill requires re-snapshot.
+
+Every rule is traced to the **official Kalshi specification** (not a private bot or
+personal notes), and a scheduled check re-verifies the specs haven't drifted.
+
+---
+
+## Commands
+
+The skill is a small vocabulary, not one giant instruction surface:
+
+| Command | What it does |
+|---------|--------------|
+| `/kalshi audit` | Inspect an existing integration for protocol mistakes |
+| `/kalshi doctor` | Run the deterministic checker (`scripts/kalshi_doctor.py`) |
+| `/kalshi auth` | Diagnose signing / environment / credential-source problems |
+| `/kalshi market-data` | Orderbook + WebSocket correctness and trust-state review |
+| `/kalshi perps` | Build or debug Perps / Margin integration |
+| `/kalshi orders` | Order construction, reconciliation, cancel semantics |
+| `/kalshi source` | Resolve a claim against the current Kalshi docs/specs |
+
+> The exact slash-command prefix depends on your runtime (Hermes, Claude Code,
+> Codex, Cursor, skills.sh). The skill loads as `SKILL.md` + `references/`; the
+> agent routes to the matching playbook.
+
+---
+
+## Quick start (read-only)
 
 ```python
 import time, base64, requests
@@ -133,8 +83,7 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
 KEY_ID, PEM_PATH = "YOUR_KEY_ID", "private_key.pem"
-# DEMO base: safe read-only proof. Swap to production only for live reads.
-REST = "https://external-api.demo.kalshi.co/trade-api/v2"
+REST = "https://external-api.demo.kalshi.co/trade-api/v2"   # demo: safe read-only
 
 def sign(method, path, key_path, body=None):
     ts = str(int(time.time() * 1000))
@@ -150,32 +99,112 @@ def sign(method, path, key_path, body=None):
             "KALSHI-ACCESS-TIMESTAMP": ts}
 
 # READ-ONLY proof: signed GET to an authenticated margin read endpoint.
-# Signing over the FULL /margin path is the rule that makes private calls work (no 401).
 r = requests.get(f"{REST}/margin/balance", headers=sign("GET", "/margin/balance", PEM_PATH))
-print(r.status_code)  # 200 = signature accepted; body is your (demo) margin balance
+print(r.status_code)  # 200 = signature accepted
 ```
 
-## Verification methodology
+This skill **never places, amends, or cancels live orders**. Every example is a
+read-only `GET`. CI fails if `README.md` or `SKILL.md` embeds a state-changing call.
 
-This skill ships **documentation + reference**, not an executable test suite. Verify a client
-you build against the **demo environment** (read-only) before any live call:
+---
 
-1. Demo REST/WS bases resolve; credential source exists (never print it).
-2. A signed private-endpoint request returns `200` (proves the `/margin` signing rule).
-3. Orderbook snapshot → trusted; live deltas apply in sequence; decision-quality True.
-4. REST orderbook reconciles with the WS book (allow for deltas between calls).
-5. Reconnect → untrusted → fresh snapshot → trusted (old state never reused as trusted).
+## See it in action
 
-A CI workflow (`.github/workflows/verify.yml`) checks the public surface on every push:
-valid frontmatter, required files present, no personal absolute paths or internal project
-paths, no credential material, no broken local reference links, no bot-specific identifiers,
-and that every reference page carries a source URL.
+### Broken authentication
+```text
+Before:  Public 200 / Private 401  → "bad credentials"
+Audit:   KALSHI-AUTH-001  signing path missing /margin
+After:   signed GET /margin/balance → 200
+```
 
-## Topics
+### Broken Perps pricing
+```text
+Input:   "0.5600"
+Buggy:   float("0.5600") / 100  = 0.0056
+Skill:   Decimal("0.5600")       = 0.5600
+```
 
-`kalshi`, `kalshi-api`, `prediction-markets`, `agent-skills`, `fix-protocol`,
-`websocket`, `trading-api`, `perps`, `margin`, `algorithmic-trading`, `rsa-pss`
+### Broken WS trust
+```text
+snapshot seq=100 → delta 101 → delta 103 (gap)
+Bad client:  keeps trading
+Skill:       marks book UNTRUSTED, requires fresh snapshot
+```
+
+Full runnable versions live in [`examples/`](examples/) (broken + fixed + README).
+
+---
+
+## Coverage
+
+| Surface | Reference | Ingested |
+|---------|-----------|----------|
+| Predictions — orderbook / canonical-book semantics | `canonical-book-pattern.md` | 2026-08-28 |
+| Predictions — forecast percentile | `forecast-percentile-api.md` | 2026-08-28 |
+| Predictions — historical candlesticks | `historical-candlesticks-api.md` | 2026-08-28 |
+| Predictions — client trades | `client-trades-api.md` | 2026-08-28 |
+| Perps / Margin — REST + WS + FIX connectivity, auth, order entry, error codes | `perps-api-connectivity.md` | 2026-08-28 |
+
+Out of scope (read the official specs): full endpoint catalogs beyond the pages
+above, account/portfolio reads not summarized in `perps-api-connectivity.md`, FIX
+session-replay/certification, Kalshi Academy tutorials. Claims are scoped to the
+pages listed; "authoritative reference bank" is **not** claimed for uncovered surfaces.
+
+---
+
+## Supported runtimes
+
+| Runtime | Status |
+|---------|--------|
+| Hermes | Verified |
+| Agent Skills standard (`npx skills add`) | Verified |
+| Claude Code / Codex / Cursor | Compatible (loads `SKILL.md` + `references/`) |
+
+Compatibility = the skill loads and routes; it does not imply a harness-specific
+integration was separately tested. The checker runs anywhere Python 3.9+ runs.
+
+---
+
+## Installation
+
+```bash
+npx skills add blakee-marcus/kalshi-api-engineering
+```
+
+Manual (any framework): copy `SKILL.md` and `references/` into your skill dir.
+Maintainer-only sync helper: `scripts/maintainer-sync-hermes.sh` (do not run from a
+clone you don't maintain).
+
+---
+
+## Source grounding
+
+Every reference page is derived from the **public Kalshi documentation**, not a
+private bot or personal notes. See `references/api-documentation-index.md` and
+`references/source-manifest.md` (per-page source URL + ingest date).
+
+| Authority | Source |
+|-----------|--------|
+| Docs home | https://docs.kalshi.com/ |
+| Predictions REST | https://docs.kalshi.com/openapi.yaml |
+| Perps / Margin REST | https://docs.kalshi.com/perps_openapi.yaml |
+| Predictions / Perps WS | asyncapi.yaml / perps_asyncapi.yaml |
+
+A scheduled GitHub Action hashes the official specs and opens an issue when they
+change — the skill stays current without manual scraping.
+
+## Safety
+
+- No network calls, no filesystem writes outside install, no credentials.
+- No live-trading authorization; any state-changing call needs explicit user
+  authorization + an execution boundary outside this skill.
+- See [SECURITY.md](SECURITY.md).
+
+## Contributing
+
+Report stale references or new bug patterns via the issue templates
+(docs-drift, new-rule, bug). See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Security policy: [SECURITY.md](SECURITY.md).
+MIT — see [LICENSE](LICENSE).

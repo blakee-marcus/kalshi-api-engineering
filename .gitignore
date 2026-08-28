@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Drift monitor state (regenerated each run)
+.drift-state.json
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
