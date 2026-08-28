@@ -86,6 +86,30 @@ def scan_file(p: Path) -> None:
         err(f"{rel}: activation-channel reference (internal)")
 
 
+def check_no_state_changing_requests() -> None:
+    """Fail if README.md / SKILL.md embed an executable state-changing request.
+
+    The skill is read-only by design: any POST/PUT/PATCH/DELETE against a live
+    (production or demo) Kalshi endpoint, or a cancel-all pattern, contradicts the
+    stated safety boundary and must not ship.
+    """
+    state_re = re.compile(
+        r"requests\.(post|put|patch|delete)\s*\(", re.IGNORECASE)
+    cancel_all = re.compile(r"cancel[\s_-]?all", re.IGNORECASE)
+    for fname in ["README.md", "SKILL.md"]:
+        p = ROOT / fname
+        if not p.exists():
+            continue
+        rel = fname
+        for i, line in enumerate(p.read_text(errors="replace").splitlines(), 1):
+            if state_re.search(line):
+                err(f"{rel}:{i}: executable state-changing request ({state_re.search(line).group(0)})")
+            if cancel_all.search(line):
+                err(f"{rel}:{i}: cancel-all pattern present")
+    if not any(f.startswith("FAIL") for f in FAIL):
+        ok("no embedded state-changing requests in README.md / SKILL.md")
+
+
 def check_patterns() -> None:
     for p in [ROOT / "SKILL.md", ROOT / "README.md", ROOT / "SECURITY.md"]:
         if p.exists():
@@ -131,6 +155,7 @@ def main() -> int:
     check_frontmatter()
     check_required_files()
     check_patterns()
+    check_no_state_changing_requests()
     check_local_links()
     check_source_urls()
     print()

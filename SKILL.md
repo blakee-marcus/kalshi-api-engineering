@@ -90,7 +90,7 @@ Credentials are **not** shared between production and demo.
 - Path to sign: from the API root, e.g. `/trade-api/v2/portfolio/balance`.
 
 ```python
-import time, base64
+import time, base64, requests
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
@@ -111,11 +111,11 @@ def sign(method: str, path: str, key_path: str, body: str | None = None) -> dict
             "KALSHI-ACCESS-SIGNATURE": base64.b64encode(sig).decode(),
             "KALSHI-ACCESS-TIMESTAMP": ts}
 
-# DELETE /margin/orders — Cancel All Orders (204, no body).
-# Pass subaccount to scope; omit to sweep ALL subaccounts.
-# Hold >=60s before placing new orders (trailing-cancel window sweeps fresh orders too).
-r = requests.delete(f"{REST}/margin/orders", headers=sign("DELETE", "/margin/orders", PEM_PATH))
-print(r.status_code)  # 204 = all matching resting orders cancelled
+# READ-ONLY proof: signed GET to an authenticated margin read endpoint.
+# Signing over the FULL /margin path is the rule that makes private calls work (no 401).
+# GET never changes state. Prefer the demo base (DEMO_REST) for first runs.
+r = requests.get(f"{REST}/margin/balance", headers=sign("GET", "/margin/balance", PEM_PATH))
+print(r.status_code)  # 200 = signature accepted (body is your margin balance)
 ```
 
 **The one rule that breaks most integrations:** margin REST requests must be signed over

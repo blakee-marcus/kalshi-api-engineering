@@ -121,7 +121,11 @@ installed copy only.
 - Python examples use `cryptography` + `requests` for signing demos; the skill content is
   language-agnostic.
 
-## 30-second start — the one rule
+## 30-second start — prove the signing rule, read-only
+
+This skill is read-only by design. The snippet below **signs a request and reads**
+an authenticated endpoint — it never places, amends, or cancels an order. Run it
+against the **demo** base first; a `GET` cannot change state.
 
 ```python
 import time, base64, requests
@@ -129,7 +133,8 @@ from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 
 KEY_ID, PEM_PATH = "YOUR_KEY_ID", "private_key.pem"
-REST = "https://external-api.kalshi.com/trade-api/v2"
+# DEMO base: safe read-only proof. Swap to production only for live reads.
+REST = "https://external-api.demo.kalshi.co/trade-api/v2"
 
 def sign(method, path, key_path, body=None):
     ts = str(int(time.time() * 1000))
@@ -144,10 +149,10 @@ def sign(method, path, key_path, body=None):
             "KALSHI-ACCESS-SIGNATURE": base64.b64encode(sig).decode(),
             "KALSHI-ACCESS-TIMESTAMP": ts}
 
-# DELETE /margin/orders — Cancel All Orders (204). Pass subaccount to scope; omit to sweep ALL.
-# Sign over the FULL /margin path or every private endpoint 401s.
-r = requests.delete(f"{REST}/margin/orders", headers=sign("DELETE", "/margin/orders", PEM_PATH))
-print(r.status_code)  # 204
+# READ-ONLY proof: signed GET to an authenticated margin read endpoint.
+# Signing over the FULL /margin path is the rule that makes private calls work (no 401).
+r = requests.get(f"{REST}/margin/balance", headers=sign("GET", "/margin/balance", PEM_PATH))
+print(r.status_code)  # 200 = signature accepted; body is your (demo) margin balance
 ```
 
 ## Verification methodology
