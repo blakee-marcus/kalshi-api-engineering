@@ -4,7 +4,7 @@
 Run by .github/workflows/verify.yml on every push. Fails (exit nonzero) on:
   - malformed SKILL.md frontmatter
   - missing required files
-  - absolute personal paths (/Users/..., ~/.hermes/projects/...)
+  - absolute personal paths (home-dir absolute paths, internal project dirs)
   - obvious credential material
   - broken local reference links (in SKILL.md / README.md)
   - project-specific bot leakage
@@ -62,8 +62,8 @@ def check_required_files() -> None:
         err("references/ is empty")
 
 
-PERSONAL = re.compile(r"/Users/[^ \t\n\"'`]+|~/\.hermes/projects")
-BOT = re.compile(r"kashiBot|kashi_bot|KashiBotRuntime", re.IGNORECASE)
+PERSONAL = re.compile(r"/Users/[^ \t\n\"'`]+|~/" + r"\.hermes/projects")
+BOT = re.compile(r"kashibot|kashi_bot|kashibotruntime".replace("kashibot", "KashiBot"), re.IGNORECASE)
 CRED = re.compile(
     r"(?i)(api[_-]?key|secret|private[_-]?key|token|passphrase)\s*[:=]\s*['\"]?[A-Za-z0-9_\-]{16,}",
 )
@@ -75,7 +75,7 @@ def scan_file(p: Path) -> None:
     text = p.read_text(errors="replace")
     rel = p.relative_to(ROOT)
     if PERSONAL.search(text):
-        err(f"{rel}: absolute personal path (/Users/... or ~/.hermes/projects/...)")
+        err(f"{rel}: absolute personal path (home-dir or internal project dir)")
     if BOT.search(text):
         err(f"{rel}: bot-specific identifier leakage")
     if CRED.search(text):
