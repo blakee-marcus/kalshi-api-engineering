@@ -53,7 +53,7 @@ against the committed baseline in `references/source-manifest.md`.
 The skill is a small set of named playbooks, not one giant instruction surface.
 Each name routes the agent to a focused reference; the exact slash-command prefix
 (e.g. `/kalshi …`) depends on your runtime (Hermes, Claude Code, Codex, Cursor,
-skills.sh) — the skill loads as `SKILL.md` + `references/` and the agent routes to
+etc.) — the skill loads as `SKILL.md` + `references/` and the agent routes to
 the matching playbook.
 
 | Command | What it does |
@@ -147,11 +147,12 @@ pages listed; an "authoritative reference bank" is **not** claimed for uncovered
 
 ## Supported runtimes
 
-| Runtime | Status |
-|---------|--------|
-| Agent Skills standard (`npx skills add`) | Install + discovery verified in CI |
-| Claude Code / Codex / Cursor | Compatible — loads `SKILL.md` + `references/` |
-| Hermes Agent | Loads — this repo is maintained via Hermes |
+| Runtime / surface               | Status                                      |
+| ------------------------------- | ------------------------------------------- |
+| Agent Skills (`npx skills add`) | Install + discovery verified in CI          |
+| Claude Code                     | Plugin manifest validated in CI             |
+| Codex / Cursor                  | Agent Skill format compatible               |
+| Hermes Agent                    | Loads and is actively maintained via Hermes |
 
 Compatibility = the skill loads and routes; it does not imply a harness-specific
 integration was separately behavior-tested. The checker runs anywhere Python 3.9+ runs.
@@ -183,13 +184,12 @@ private bot or personal notes. See `references/api-documentation-index.md` and
 | Perps / Margin REST | https://docs.kalshi.com/perps_openapi.yaml |
 | Predictions / Perps WS | asyncapi.yaml / perps_asyncapi.yaml |
 
-A scheduled GitHub Action hashes the official specs and compares them against the
-committed baseline in `references/source-manifest.md`, opening an issue when they
-change — the skill stays current without manual scraping.
+A scheduled GitHub Action hashes the official specs against the committed baseline
+and opens an issue when they change, flagging references that may need maintainer review.
 
 ## Safety
 
-- No network calls, no filesystem writes outside install, no credentials.
+- No autonomous trading or account mutation. Repository tooling may perform read-only documentation/network checks and update local maintenance state.
 - No live-trading authorization; any state-changing call needs explicit user
   authorization + an execution boundary outside this skill.
 - See [SECURITY.md](SECURITY.md).
