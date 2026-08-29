@@ -66,3 +66,22 @@ jobs:
         run: python scripts/check_upstream_drift.py
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  packaging-checks:
+    name: Skill packaging discovery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "20"
+      - name: Skill discovery (npx skills add . --list)
+        run: npx --yes skills@latest add . --list
+      - name: Claude plugin manifest validation
+        run: |
+          npm install -g @anthropic-ai/claude-code || true
+          if command -v claude >/dev/null 2>&1; then
+            claude plugin validate . --strict
+          else
+            echo "claude CLI not available in this runner image; skipping plugin validate"
+          fi

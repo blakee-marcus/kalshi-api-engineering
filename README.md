@@ -17,6 +17,8 @@ Then ask your agent:
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Kalshi docs](https://img.shields.io/badge/source-docs.kalshi.com-blue)](https://docs.kalshi.com/)
 
+**Discoverable on:** [![Claude Code](https://www.skills.sh/agents/claude-code.svg)](https://www.skills.sh/agent/claude-code) [![Cursor](https://www.skills.sh/agents/cursor.svg)](https://www.skills.sh/agent/cursor) [![Codex](https://www.skills.sh/agents/codex.svg)](https://www.skills.sh/agent/codex) [![GitHub Copilot](https://www.skills.sh/agents/github-copilot.svg)](https://www.skills.sh/agent/github-copilot)
+
 ---
 
 ## It catches things like

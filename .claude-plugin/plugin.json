@@ -1,0 +1,10 @@
+{
+  "name": "kalshi-api-engineering",
+  "description": "Source-backed Kalshi API engineering skill: audit, doctor, and build correct Kalshi integrations (Trade API, REST, WebSocket, FIX, Predictions, Perps/Margin).",
+  "version": "0.2.0",
+  "author": {
+    "name": "Blake Marcus"
+  },
+  "repository": "https://github.com/blakee-marcus/kalshi-api-engineering",
+  "license": "MIT"
+}
