@@ -31,7 +31,7 @@ jobs:
       - name: Install pytest
         run: python -m pip install --upgrade pip && python -m pip install pytest
       - name: Run pytest
-        run: python -m pytest tests/test_kalshi_doctor.py -q
+        run: python -m pytest tests/ -q
 
   doctor-smoke:
     name: Doctor scans fixtures + examples

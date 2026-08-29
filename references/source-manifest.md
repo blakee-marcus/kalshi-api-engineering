@@ -49,3 +49,19 @@ bots have been scrubbed; if you find a leak, report it and it will be removed.
 Last full ingestion pass: **2026-08-28**. Re-verify against the live specs before
 relying on a detail for production code. Kalshi's API and specs change; the docs are
 the authority.
+
+## Spec hashes (drift baseline)
+
+Short SHA-256 (first 16 hex) of each official spec as last recorded by
+`scripts/check_upstream_drift.py`. This block is the committed baseline the
+drift monitor compares against on every run — kept in-repo (not a gitignored
+sidecar) so a fresh CI checkout can actually detect a change. When a hash
+changes, the script rewrites this block; commit it via a PR.
+
+```[spec-hashes]
+openapi.yaml=99bdf4093d7eced6
+asyncapi.yaml=ff4f5dbcf6c70ecd
+perps_openapi.yaml=dee33d2df0b2983a
+perps_asyncapi.yaml=8af2212c643e5eff
+llms.txt=1bdc65d95f60560b
+```
