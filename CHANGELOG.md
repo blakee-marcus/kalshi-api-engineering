@@ -7,6 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **Drift monitor could never detect change.** `scripts/check_upstream_drift.py`
+  stored its baseline in a gitignored `.drift-state.json` that a fresh CI checkout
+  discarded every run, so `prev` was always empty and no drift was ever reported.
+  The baseline now lives in a committed `[spec-hashes]` block in
+  `references/source-manifest.md`, which every checkout carries; the script rewrites
+  that block when a hash changes (committed via PR from the drift issue). Added
+  `tests/test_check_upstream_drift.py` to guard this regression.
+
+### Changed
+- **Softened doctor claims.** The checker is now described as an *experimental
+  deterministic lint* with heuristic (whole-file pattern) rules *derived from* the
+  official specs, not as automatically finding bugs or being "traced to" the spec.
+  README and SKILL.md wording updated accordingly. The rules are unchanged and still
+  useful as first-pass review prompts.
 ## [0.2.0] — 2026-08-28
 
 ### Added

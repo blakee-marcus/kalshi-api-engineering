@@ -29,11 +29,14 @@ Then ask your agent:
 ✗ Perps code expecting non-existent WS channels (market_lifecycle_v2, market_positions)
 ```
 
-The skill ships **12 deterministic rules** (`scripts/kalshi_doctor.py`) that scan
-your client code and report `PASS` / `WARN` / `FAIL` with the exact file:line,
-the official Kalshi source, and a suggested fix.
+The skill ships an **experimental deterministic checker** (`scripts/kalshi_doctor.py`)
+with 12 heuristic rules that scan your client code and report `PASS` / `WARN` /
+`FAIL` with the file:line, the official Kalshi source it is *derived* from, and a
+suggested fix. The rules are whole-file pattern checks, not semantic analysis — they
+catch the common mistakes below with good recall, but can miss nuanced cases and
+can flag clean code. Treat findings as review prompts, not verdicts.
 
-> **Install this and your agent can automatically find the Kalshi integration bugs LLMs repeatedly generate.**
+> **Install this and your agent gets a fast first-pass lint for the Kalshi integration bugs LLMs repeatedly generate.**
 
 ---
 
@@ -50,8 +53,10 @@ the agent runs before shipping:
 - **Broken WS trust** — a sequence gap or reconnect that doesn't invalidate the
   book lets the agent trade on stale data. The skill requires re-snapshot.
 
-Every rule is traced to the **official Kalshi specification** (not a private bot or
-personal notes), and a scheduled check re-verifies the specs haven't drifted.
+Every rule is *derived* from the **official Kalshi specification** (not a private
+bot or personal notes) and points at the spec it came from; a scheduled check
+re-verifies the specs haven't drifted against the committed baseline in
+`references/source-manifest.md`.
 
 ---
 
@@ -190,7 +195,8 @@ private bot or personal notes. See `references/api-documentation-index.md` and
 | Perps / Margin REST | https://docs.kalshi.com/perps_openapi.yaml |
 | Predictions / Perps WS | asyncapi.yaml / perps_asyncapi.yaml |
 
-A scheduled GitHub Action hashes the official specs and opens an issue when they
+A scheduled GitHub Action hashes the official specs and compares them against the
+committed baseline in `references/source-manifest.md`, opening an issue when they
 change — the skill stays current without manual scraping.
 
 ## Safety

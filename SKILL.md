@@ -15,9 +15,11 @@ metadata:
 
 A source-backed agent skill for building **correct, exchange-safe Kalshi
 integrations** — Trade API, REST, WebSocket, FIX, Predictions (event contracts),
-and Perps / Margin (perpetual futures). It is documentation + a deterministic
-checker, **not a trading bot**: it describes the protocol so a client is built
-correctly, and it audits client code for the mistakes LLMs repeatedly make.
+and Perps / Margin (perpetual futures). It is documentation + an experimental
+deterministic checker, **not a trading bot**: it describes the protocol so a client
+is built correctly, and it lints client code for the mistakes LLMs repeatedly make.
+The checker's rules are whole-file pattern checks derived from the official specs —
+useful first-pass review prompts, not semantic verdicts.
 
 ## Command vocabulary
 
@@ -26,7 +28,7 @@ Route each request to one playbook:
 | Command | Playbook | Use it for |
 |---------|----------|------------|
 | `audit` | `audit.md` | Inspect an existing integration for protocol mistakes |
-| `doctor` | `doctor.md` | Run the deterministic checker (CI gate) |
+| `doctor` | `doctor.md` | Run the experimental deterministic checker (CI gate) |
 | `auth` | `auth.md` | Diagnose RSA-PSS signing / 401s |
 | `market-data` | `market-data.md` | Orderbook / WS trust-state review |
 | `perps` | `perps.md` | Build/debug Perps / Margin integration |
