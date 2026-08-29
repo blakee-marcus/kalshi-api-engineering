@@ -2,6 +2,12 @@
 
 **Make your AI coding agent reliable at Kalshi.**
 
+![version](https://img.shields.io/badge/version-0.2.0-blue)
+[![CI](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml/badge.svg)](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Kalshi docs](https://img.shields.io/badge/source-docs.kalshi.com-blue)](https://docs.kalshi.com/)
+**Discoverable on:** [![Claude Code](https://www.skills.sh/agents/claude-code.svg)](https://www.skills.sh/agent/claude-code) [![Cursor](https://www.skills.sh/agents/cursor.svg)](https://www.skills.sh/agent/cursor) [![Codex](https://www.skills.sh/agents/codex.svg)](https://www.skills.sh/agent/codex) [![GitHub Copilot](https://www.skills.sh/agents/github-copilot.svg)](https://www.skills.sh/agent/github-copilot)
+
 Source-backed REST, WebSocket, FIX and Perps guidance — plus a deterministic
 checker that catches the integration bugs LLMs repeatedly generate.
 
@@ -13,18 +19,16 @@ Then ask your agent:
 
 > **Audit this Kalshi integration.**
 
-[![CI](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml/badge.svg)](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Kalshi docs](https://img.shields.io/badge/source-docs.kalshi.com-blue)](https://docs.kalshi.com/)
-
-**Discoverable on:** [![Claude Code](https://www.skills.sh/agents/claude-code.svg)](https://www.skills.sh/agent/claude-code) [![Cursor](https://www.skills.sh/agents/cursor.svg)](https://www.skills.sh/agent/cursor) [![Codex](https://www.skills.sh/agents/codex.svg)](https://www.skills.sh/agent/codex) [![GitHub Copilot](https://www.skills.sh/agents/github-copilot.svg)](https://www.skills.sh/agent/github-copilot)
-
 ---
 
-## It catches things like
+## What it catches
+
+An AI-generated Kalshi client usually *looks* correct and then fails in one of a
+handful of predictable ways. The skill turns those failure modes into a checklist
+the agent runs before shipping:
 
 ```text
-✗ Missing /margin in RSA-PSS signing        → every private call 401s
+✗ Missing /margin in RSA-PSS signing          → every private call 401s
 ✗ Predictions WS auth reused for Perps      → silent auth failure
 ✗ Fixed-point prices divided by 100         → 100x mispricing
 ✗ Stale orderbooks treated as trustworthy   → trades on dead data
@@ -35,50 +39,32 @@ The skill ships an **experimental deterministic checker** (`scripts/kalshi_docto
 with 12 heuristic rules that scan your client code and report `PASS` / `WARN` /
 `FAIL` with the file:line, the official Kalshi source it is *derived* from, and a
 suggested fix. The rules are whole-file pattern checks, not semantic analysis — they
-catch the common mistakes below with good recall, but can miss nuanced cases and
+catch the common mistakes above with good recall, but can miss nuanced cases and
 can flag clean code. Treat findings as review prompts, not verdicts.
 
-> **Install this and your agent gets a fast first-pass lint for the Kalshi integration bugs LLMs repeatedly generate.**
-
----
-
-## Why this skill
-
-An AI-generated Kalshi client usually *looks* correct and then fails in one of a
-handful of predictable ways. This skill turns those failure modes into a checklist
-the agent runs before shipping:
-
-- **Broken auth** — public `200`, private `401`; the fix is signing the full
-  `/margin` path. Most integrations hit this first.
-- **Broken Perps pricing** — `"0.5600"` parsed as `float` and divided by 100
-  becomes `0.0056`. The skill enforces `Decimal("0.5600")`.
-- **Broken WS trust** — a sequence gap or reconnect that doesn't invalidate the
-  book lets the agent trade on stale data. The skill requires re-snapshot.
-
 Every rule is *derived* from the **official Kalshi specification** (not a private
-bot or personal notes) and points at the spec it came from; a scheduled check
-re-verifies the specs haven't drifted against the committed baseline in
-`references/source-manifest.md`.
+bot or personal notes); a scheduled check re-verifies the specs haven't drifted
+against the committed baseline in `references/source-manifest.md`.
 
 ---
 
-## Commands
+## Command vocabulary
 
-The skill is a small vocabulary, not one giant instruction surface:
+The skill is a small set of named playbooks, not one giant instruction surface.
+Each name routes the agent to a focused reference; the exact slash-command prefix
+(e.g. `/kalshi …`) depends on your runtime (Hermes, Claude Code, Codex, Cursor,
+skills.sh) — the skill loads as `SKILL.md` + `references/` and the agent routes to
+the matching playbook.
 
 | Command | What it does |
 |---------|--------------|
-| `/kalshi audit` | Inspect an existing integration for protocol mistakes |
-| `/kalshi doctor` | Run the deterministic checker (`scripts/kalshi_doctor.py`) |
-| `/kalshi auth` | Diagnose signing / environment / credential-source problems |
-| `/kalshi market-data` | Orderbook + WebSocket correctness and trust-state review |
-| `/kalshi perps` | Build or debug Perps / Margin integration |
-| `/kalshi orders` | Order construction, reconciliation, cancel semantics |
-| `/kalshi source` | Resolve a claim against the current Kalshi docs/specs |
-
-> The exact slash-command prefix depends on your runtime (Hermes, Claude Code,
-> Codex, Cursor, skills.sh). The skill loads as `SKILL.md` + `references/`; the
-> agent routes to the matching playbook.
+| `audit` | Inspect an existing integration for protocol mistakes |
+| `doctor` | Run the deterministic checker (`scripts/kalshi_doctor.py`) |
+| `auth` | Diagnose signing / environment / credential-source problems |
+| `market-data` | Orderbook + WebSocket correctness and trust-state review |
+| `perps` | Build or debug Perps / Margin integration |
+| `orders` | Order construction, reconciliation, cancel semantics |
+| `source` | Resolve a claim against the current Kalshi docs/specs |
 
 ---
 
@@ -155,7 +141,7 @@ Full runnable versions live in [`examples/`](examples/) (broken + fixed + README
 Out of scope (read the official specs): full endpoint catalogs beyond the pages
 above, account/portfolio reads not summarized in `perps-api-connectivity.md`, FIX
 session-replay/certification, Kalshi Academy tutorials. Claims are scoped to the
-pages listed; "authoritative reference bank" is **not** claimed for uncovered surfaces.
+pages listed; an "authoritative reference bank" is **not** claimed for uncovered surfaces.
 
 ---
 
@@ -163,12 +149,12 @@ pages listed; "authoritative reference bank" is **not** claimed for uncovered su
 
 | Runtime | Status |
 |---------|--------|
-| Hermes | Verified |
-| Agent Skills standard (`npx skills add`) | Verified |
-| Claude Code / Codex / Cursor | Compatible (loads `SKILL.md` + `references/`) |
+| Agent Skills standard (`npx skills add`) | Install + discovery verified in CI |
+| Claude Code / Codex / Cursor | Compatible — loads `SKILL.md` + `references/` |
+| Hermes Agent | Loads — this repo is maintained via Hermes |
 
 Compatibility = the skill loads and routes; it does not imply a harness-specific
-integration was separately tested. The checker runs anywhere Python 3.9+ runs.
+integration was separately behavior-tested. The checker runs anywhere Python 3.9+ runs.
 
 ---
 
