@@ -5,8 +5,9 @@
 ![version](https://img.shields.io/badge/version-0.2.1-blue)
 [![CI](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml/badge.svg)](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Kalshi docs](https://img.shields.io/badge/source-docs.kalshi.com-blue)](https://docs.kalshi.com/)
-**Discoverable on:** [![Claude Code](https://www.skills.sh/agents/claude-code.svg)](https://www.skills.sh/agent/claude-code) [![Cursor](https://www.skills.sh/agents/cursor.svg)](https://www.skills.sh/agent/cursor) [![Codex](https://www.skills.sh/agents/codex.svg)](https://www.skills.sh/agent/codex) [![GitHub Copilot](https://www.skills.sh/agents/github-copilot.svg)](https://www.skills.sh/agent/github-copilot)
+[![skills.sh installs](https://skills.sh/b/blakee-marcus/kalshi-api-engineering)](https://skills.sh/blakee-marcus/kalshi-api-engineering)
+
+**Discoverable on:** [Claude Code](https://www.skills.sh/agent/claude-code) · [Cursor](https://www.skills.sh/agent/cursor) · [Codex](https://www.skills.sh/agent/codex) · [GitHub Copilot](https://www.skills.sh/agent/github-copilot)
 
 Source-backed REST, WebSocket, FIX and Perps guidance — plus a deterministic
 checker that catches the integration bugs LLMs repeatedly generate.
