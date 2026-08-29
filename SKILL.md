@@ -1,7 +1,7 @@
 ---
 name: kalshi-api-engineering
 description: "Kalshi API engineering: audit, doctor, and build correct Kalshi integrations (Trade API, REST, WebSocket, FIX, Predictions, Perps/Margin)."
-version: 0.2.0
+version: 0.2.1
 author: Blake Marcus, Hermes Agent
 license: MIT
 homepage: https://github.com/blakee-marcus/kalshi-api-engineering

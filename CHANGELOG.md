@@ -5,7 +5,7 @@ All notable changes to the public surface of this skill are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project
 adheres to [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.2.1] — 2026-08-29
 
 ### Fixed
 - **Drift monitor could never detect change.** `scripts/check_upstream_drift.py`
@@ -14,7 +14,8 @@ adheres to [Semantic Versioning](https://semver.org/).
   The baseline now lives in a committed `[spec-hashes]` block in
   `references/source-manifest.md`, which every checkout carries; the script rewrites
   that block when a hash changes (committed via PR from the drift issue). Added
-  `tests/test_check_upstream_drift.py` to guard this regression.
+  `tests/test_check_upstream_drift.py` to guard this regression, including idempotent
+  repeated-detection (no duplicate issues on consecutive fresh checkouts).
 
 ### Changed
 - **Softened doctor claims.** The checker is now described as an *experimental
@@ -22,6 +23,23 @@ adheres to [Semantic Versioning](https://semver.org/).
   official specs, not as automatically finding bugs or being "traced to" the spec.
   README and SKILL.md wording updated accordingly. The rules are unchanged and still
   useful as first-pass review prompts.
+- **Packaging parity with reference skills.** Added `AGENTS.md` maintenance contract,
+  `.claude-plugin/plugin.json`, CI skill-discovery (`npx skills add . --list`) and
+  `claude plugin validate . --strict` jobs, and skills.sh discoverable badges.
+- **CI Node pin.** Packaging job uses Node 22 to satisfy `skills@1.5.23` engine
+  requirement (removes `EBADENGINE`).
+- **README accuracy.** Corrected the Safety section (repository tooling performs
+  read-only network/maintenance checks; no autonomous trading), scoped the drift
+  monitor to *detect* change (not auto-refresh references), removed `skills.sh` from
+  the runtime list, and tightened the supported-runtimes table to evidence-backed
+  status (CI-verified install/discovery/plugin-validation vs. format-compatible).
+
+### Compatibility
+- `npx skills add` (Agent Skills): install + discovery verified in CI.
+- Claude Code: plugin manifest validated in CI.
+- Codex / Cursor: Agent Skill format compatible.
+- Hermes Agent: loads and is actively maintained via Hermes.
+
 ## [0.2.0] — 2026-08-28
 
 ### Added

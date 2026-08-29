@@ -2,7 +2,7 @@
 
 **Make your AI coding agent reliable at Kalshi.**
 
-![version](https://img.shields.io/badge/version-0.2.0-blue)
+![version](https://img.shields.io/badge/version-0.2.1-blue)
 [![CI](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml/badge.svg)](https://github.com/blakee-marcus/kalshi-api-engineering/actions/workflows/verify.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Kalshi docs](https://img.shields.io/badge/source-docs.kalshi.com-blue)](https://docs.kalshi.com/)
