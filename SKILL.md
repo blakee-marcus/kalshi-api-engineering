@@ -1,6 +1,6 @@
 ---
 name: kalshi-api-engineering
-description: "Kalshi API engineering: audit, doctor, and build correct Kalshi integrations (Trade API, REST, WebSocket, FIX, Predictions, Perps/Margin)."
+description: "Kalshi Doctor: audit, doctor, and build correct Kalshi API integrations before production. (Trade API, REST, WebSocket, FIX, Predictions, Perps/Margin)."
 version: 0.2.1
 author: Blake Marcus, Hermes Agent
 license: MIT

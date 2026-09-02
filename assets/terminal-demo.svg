@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="380" viewBox="0 0 720 380" role="img" aria-label="Kalshi Doctor terminal demo">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="380" rx="12" fill="url(#bg)"/>
+  <!-- title bar -->
+  <rect x="0" y="0" width="720" height="36" rx="12" fill="#020617"/>
+  <circle cx="20" cy="18" r="6" fill="#ef4444"/>
+  <circle cx="40" cy="18" r="6" fill="#f59e0b"/>
+  <circle cx="60" cy="18" r="6" fill="#22c55e"/>
+  <text x="360" y="23" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#94a3b8">kalshi_doctor — examples/</text>
+  <!-- prompt -->
+  <text x="24" y="70" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14" fill="#38bdf8">$</text>
+  <text x="44" y="70" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="14" fill="#e2e8f0">python scripts/kalshi_doctor.py examples/auth-401/broken.py</text>
+  <!-- output -->
+  <text x="24" y="105" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#94a3b8">kalshi_doctor — scanning examples/auth-401/broken.py</text>
+  <text x="24" y="128" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#64748b">============================================================</text>
+  <text x="24" y="162" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#f87171">[FAIL] KALSHI-AUTH-001</text>
+  <text x="200" y="162" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#e2e8f0">broken.py:5</text>
+  <text x="40" y="186" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#cbd5e1">Margin request signing must cover the full /trade-api/v2/margin/... path.</text>
+  <text x="40" y="208" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#94a3b8">found: sign(</text>
+  <text x="40" y="230" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="12" fill="#22c55e">fix:   Sign the full /trade-api/v2/margin/... path for every margin REST request.</text>
+  <text x="24" y="270" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#64748b">============================================================</text>
+  <text x="24" y="295" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#f87171">1 FAIL</text>
+  <text x="90" y="295" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="13" fill="#e2e8f0">, 0 WARN across 1 finding(s).</text>
+  <!-- brand pill -->
+  <rect x="24" y="330" width="160" height="28" rx="14" fill="#334155"/>
+  <text x="104" y="349" text-anchor="middle" font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="600" fill="#f8fafc">Kalshi Doctor</text>
+</svg>

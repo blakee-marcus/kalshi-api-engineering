@@ -221,8 +221,17 @@ def main() -> int:
     root = Path(args.path).resolve()
     findings = run(root)
 
+    def _display_path(path: str) -> str:
+        p = Path(path)
+        if root.is_file() and p == root:
+            return root.name
+        try:
+            return p.relative_to(root).as_posix()
+        except ValueError:
+            return p.name
+
     if args.json:
-        out = [{"rule": f.rule, "severity": f.severity, "path": f.path, "line": f.line,
+        out = [{"rule": f.rule, "severity": f.severity, "path": _display_path(f.path), "line": f.line,
                 "snippet": f.snippet, "why": f.why, "fix": f.fix, "source": SOURCE} for f in findings]
         print(json.dumps(out, indent=2))
         return 1 if any(f.severity == "FAIL" for f in findings) else 0
@@ -235,7 +244,7 @@ def main() -> int:
     warns = [f for f in findings if f.severity == "WARN"]
     for f in findings:
         mark = "FAIL" if f.severity == "FAIL" else "WARN"
-        print(f"\n  [{mark}] {f.rule}  {f.path}:{f.line}")
+        print(f"\n  [{mark}] {f.rule}  {_display_path(f.path)}:{f.line}")
         print(f"         {f.why}")
         print(f"         found: {f.snippet}")
         print(f"         fix:   {f.fix}")
