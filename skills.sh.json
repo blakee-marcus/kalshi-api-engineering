@@ -1,0 +1,11 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Kalshi API Engineering",
+      "description": "Source-backed checks for authentication, pricing, WebSocket state, Predictions, and Perps/Margin integrations.",
+      "skills": ["kalshi-api-engineering"]
+    }
+  ]
+}
