@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "17 6 * * *"   # daily upstream-spec drift check
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   verify-public-surface:
     name: Verify public surface
